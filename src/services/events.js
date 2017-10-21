@@ -1,9 +1,9 @@
 const axios = require("axios")
-
+const { base } = require('../config.js')
 // 3090
 
 var api = axios.create({
-  baseURL: "https://intouch-band-api-snhldtdgxg.now.sh",
+  baseURL: base,
   timeout: 10000
 })
 
