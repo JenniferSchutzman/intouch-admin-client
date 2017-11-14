@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should build new schedule item 1`] = `
+Object {
+  "name": "test name",
+  "time": Object {
+    "string": "4:00 pm",
+    "unix": 1510779600,
+  },
+}
+`;
