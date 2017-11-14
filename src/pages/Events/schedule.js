@@ -16,12 +16,10 @@ import { Field, reduxForm } from "redux-form"
 import Slide from "material-ui/transitions/Slide"
 import MaterialInput from "../../components/MaterialInput"
 import "rc-time-picker/assets/index.css"
-// import TimePicker from "rc-time-picker"
-import moment from "moment-timezone"
+import buildNewScheduleItem from './lib/buildNewScheduleItem'
 import {
   inc,
   times,
-  merge,
   toString,
   length,
   curry,
@@ -31,7 +29,6 @@ import {
   over,
   reject
 } from "ramda"
-import shortId from "shortid"
 import IconButton from "material-ui/IconButton"
 import DeleteIcon from "material-ui-icons/Delete"
 
@@ -64,14 +61,8 @@ class Schedule extends Component {
   }
 
   handleOnAdd = formData => {
-    const { hour, minute, timeOfDay } = this.state
-    const timeString = `${hour}:${minute} ${timeOfDay}`
-    const time = {
-      string: timeString,
-      unix: moment(timeString, "h:mm a").unix()
-    }
-    const eventData = { time, id: shortId() }
-    const updatedEvent = merge(formData, eventData)
+    const { event: { date } } = this.props
+    const updatedEvent = buildNewScheduleItem(this.state, date, formData)
     this.resetTime()
     this.props.reset()
     this.props.onAddEvent(updatedEvent)
@@ -106,11 +97,7 @@ class Schedule extends Component {
       const val = type === "hour" ? toString(inc(i)) : toString(i)
       const stringifiedVal =
         length(val) === 1 && type === "minute" ? `0${val}` : val
-      return (
-        <option value={stringifiedVal}>
-          {stringifiedVal}
-        </option>
-      )
+      return <option value={stringifiedVal}>{stringifiedVal}</option>
     })
 
     const renderSchedule = item => {
@@ -133,9 +120,11 @@ class Schedule extends Component {
     return (
       <div>
         <List>
-          {length(this.props.event.schedule) > 0
-            ? map(renderSchedule, this.props.event.schedule)
-            : <h1>No schedule items! Click the + to add a schedule item.</h1>}
+          {length(this.props.event.schedule) > 0 ? (
+            map(renderSchedule, this.props.event.schedule)
+          ) : (
+            <h1>No schedule items! Click the + to add a schedule item.</h1>
+          )}
         </List>
         <Dialog
           open={this.state.open}
