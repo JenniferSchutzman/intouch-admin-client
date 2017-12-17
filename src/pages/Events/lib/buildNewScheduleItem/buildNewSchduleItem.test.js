@@ -8,11 +8,16 @@ test("should build new schedule item", () => {
 
 var selectedTime = {
   open: true,
-  hour: "4",
+  hour: "12",
   minute: "00",
-  timeOfDay: "pm"
+  timeOfDay: "pm",
+  endTime: {
+    hour: "6",
+    minute: "00",
+    timeOfDay: "pm",
+    hasEndTime: true
+  }
 }
-
 var eventDate = "2017-11-15"
 
 var formData = {

@@ -16,13 +16,14 @@ import { Field, reduxForm } from "redux-form"
 import Slide from "material-ui/transitions/Slide"
 import MaterialInput from "../../components/MaterialInput"
 import "rc-time-picker/assets/index.css"
-import buildNewScheduleItem from './lib/buildNewScheduleItem'
+import buildNewScheduleItem from "./lib/buildNewScheduleItem"
 import {
   inc,
   times,
   toString,
   length,
   curry,
+  merge,
   assoc,
   map,
   lensProp,
@@ -31,6 +32,7 @@ import {
 } from "ramda"
 import IconButton from "material-ui/IconButton"
 import DeleteIcon from "material-ui-icons/Delete"
+import moment from "moment-timezone"
 
 const styleSheet = createStyleSheet("TextFields", theme => ({
   textField: {
@@ -47,7 +49,13 @@ class Schedule extends Component {
       open: false,
       hour: "12",
       minute: "00",
-      timeOfDay: "pm"
+      timeOfDay: "pm",
+      endTime: {
+        hour: "12",
+        minute: "00",
+        timeOfDay: "pm",
+        hasEndTime: false
+      }
     }
   }
 
@@ -56,7 +64,13 @@ class Schedule extends Component {
       open: false,
       hour: "12",
       minute: "00",
-      timeOfDay: "pm"
+      timeOfDay: "pm",
+      endTime: {
+        hour: "12",
+        minute: "00",
+        timeOfDay: "pm",
+        hasEndTime: false
+      }
     })
   }
 
@@ -90,6 +104,22 @@ class Schedule extends Component {
     }
   }
 
+  handleTimeChangeEnd = path => {
+    return e => {
+      const endTime = assoc(path, e.target.value, this.state.endTime)
+      const currentState = merge(this.state, { endTime })
+      this.setState(currentState)
+    }
+  }
+
+  handleToggleEndTime = action => {
+    return e => {
+      const hasEndTime = action === "show"
+      const updatedEndTime = merge(this.state.endTime, { hasEndTime })
+      this.setState({ endTime: updatedEndTime })
+    }
+  }
+
   render() {
     const { classes } = this.props
 
@@ -101,10 +131,31 @@ class Schedule extends Component {
     })
 
     const renderSchedule = item => {
-      // const { event: { timeZone = "US/Eastern" } } = this.props
+      const getDifference = time => {
+        const start = moment(time.string, "h:mm a")
+        const end = moment(time.endString, "h:mm a")
+        const diff = end.diff(start, "minutes")
+        const formatMins = diff => (diff % 60 === 0 ? "" : ` ${diff % 60} m`)
+        const toRender =
+          diff / 60 >= 1
+            ? `(${Math.floor(diff / 60)} h${formatMins(diff)})`
+            : `(${diff} m)`
+
+        return <span className="f6 gray">{toRender}</span>
+      }
+
+      const time = item.time.hasEndTime ? (
+        <span>
+          {`${item.time.string} - ${item.time.endString}`}{" "}
+          {getDifference(item.time)}
+        </span>
+      ) : (
+        <span>{item.time.string}</span>
+      )
+
       return (
         <ListItem button>
-          <ListItemText primary={item.time.string} secondary={item.name} />
+          <ListItemText primary={time} secondary={item.name} />
           <ListItemSecondaryAction>
             <IconButton
               aria-label="delete"
@@ -163,6 +214,52 @@ class Schedule extends Component {
                   <option value="pm">pm</option>
                   <option value="am">am</option>
                 </select>
+              </div>
+              <div className="db w-100 cf">
+                <div className="db w-100 mb2 pointer">
+                  {this.state.endTime.hasEndTime ? (
+                    <span
+                      onClick={this.handleToggleEndTime("hide")}
+                      className="link fr f6 blue mt2"
+                    >
+                      remove ending time
+                    </span>
+                  ) : (
+                    <span
+                      onClick={this.handleToggleEndTime("show")}
+                      className="link fr f6 blue mt2"
+                    >
+                      add ending time
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div>
+                {this.state.endTime.hasEndTime && (
+                  <div>
+                    <select
+                      value={this.state.endTime.hour}
+                      onChange={this.handleTimeChangeEnd("hour")}
+                    >
+                      {times(renderTime("hour"), 12)}
+                    </select>
+                    <span> : </span>
+                    <select
+                      value={this.state.endTime.minute}
+                      onChange={this.handleTimeChangeEnd("minute")}
+                    >
+                      {times(renderTime("minute"), 60)}
+                    </select>
+                    <select
+                      value={this.state.endTime.timeOfDay}
+                      onChange={this.handleTimeChangeEnd("timeOfDay")}
+                      className="ml1"
+                    >
+                      <option value="pm">pm</option>
+                      <option value="am">am</option>
+                    </select>
+                  </div>
+                )}
               </div>
             </form>
           </DialogContent>

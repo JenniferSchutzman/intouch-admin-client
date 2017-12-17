@@ -4,8 +4,10 @@ exports[`should build new schedule item 1`] = `
 Object {
   "name": "test name",
   "time": Object {
-    "string": "4:00 pm",
-    "unix": 1510779600,
+    "endString": "6:00 pm",
+    "hasEndTime": true,
+    "string": "12:00 pm",
+    "unix": 1510765200,
   },
 }
 `;
