@@ -121,19 +121,19 @@ class EventsList extends Component {
           onDatesChange={this.setDates} // PropTypes.func.isRequired,
           focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
           onFocusChange={focusedInput => this.setState({ focusedInput })} // PropTypes.func.isRequired,
-          isOutsideRange={(x) => false}
+          isOutsideRange={x => false}
         />
         <List>
           {mapIndex(renderEvents(length(filteredEvents)), filteredEvents)}
         </List>
         <FAB onClick={this.handleOpen} />
-        {this.props.events.renderEventShowPage
-          ? <EventsShow
-              open={this.props.events.renderEventShowPage}
-              handleClose={this.handleShowClose}
-              event={this.props.events.event}
-            />
-          : null}
+        {this.props.events.renderEventShowPage ? (
+          <EventsShow
+            open={this.props.events.renderEventShowPage}
+            handleClose={this.handleShowClose}
+            event={this.props.events.event}
+          />
+        ) : null}
         <AddEvent
           open={this.state.open}
           handleClose={this.handleRequestClose}
@@ -146,11 +146,7 @@ class EventsList extends Component {
           SnackbarContentProps={{
             "aria-describedby": "message-id"
           }}
-          message={
-            <span id="message-id">
-              {this.state.snackBarText}
-            </span>
-          }
+          message={<span id="message-id">{this.state.snackBarText}</span>}
         />
       </div>
     )
