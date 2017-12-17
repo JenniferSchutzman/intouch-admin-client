@@ -25,5 +25,5 @@ deployment:
       - npm run build
       - cd ./build
       - now . -t ${NOW_CLI_TOKEN} -e REACT_APP_ENV=${ENVIRONMENT}
-      - now -t ${NOW_CLI_TOKEN} alias intouch.now.sh
+      - now -t ${NOW_CLI_TOKEN} alias intouch
   
