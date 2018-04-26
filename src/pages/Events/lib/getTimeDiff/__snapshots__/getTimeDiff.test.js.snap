@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getTimeDiff should work with hours and minutes 1`] = `
+Object {
+  "hours": 2,
+  "minutes": 6,
+}
+`;
+
+exports[`getTimeDiff should work with only hours 1`] = `
+Object {
+  "hours": 2,
+  "minutes": null,
+}
+`;
+
+exports[`getTimeDiff should work with only minutes 1`] = `
+Object {
+  "hours": 0,
+  "minutes": 5,
+}
+`;
