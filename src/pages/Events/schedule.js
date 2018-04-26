@@ -6,6 +6,7 @@ import List, {
 } from "material-ui/List"
 import FAB from "../../components/FAB"
 import Button from "material-ui/Button"
+import Snackbar from "material-ui/Snackbar"
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -25,6 +26,8 @@ import {
   curry,
   merge,
   assoc,
+  pathOr,
+  gt,
   map,
   lensProp,
   over,
@@ -33,6 +36,10 @@ import {
 import IconButton from "material-ui/IconButton"
 import DeleteIcon from "material-ui-icons/Delete"
 import moment from "moment-timezone"
+
+function Transition(props) {
+  return <Slide direction="down" {...props} />
+}
 
 const styleSheet = theme => ({
   textField: {
@@ -59,7 +66,9 @@ class Schedule extends Component {
         minute: "00",
         timeOfDay: "pm",
         hasEndTime: false
-      }
+      },
+      showFormError: false,
+      formErrorText: ""
     }
   }
 
@@ -74,7 +83,15 @@ class Schedule extends Component {
         minute: "00",
         timeOfDay: "pm",
         hasEndTime: false
-      }
+      },
+      showFormError: false,
+      formErrorText: ""
+    })
+  }
+
+  handleCloseSnackBar = () => {
+    this.setState({
+      showFormError: false
     })
   }
 
@@ -82,12 +99,35 @@ class Schedule extends Component {
     const {
       event: { date }
     } = this.props
-    const updatedEvent = buildNewScheduleItem(this.state, date, formData)
-    this.resetTime()
-    this.props.reset()
-    this.props.onAddEvent(updatedEvent)
-  }
 
+
+    const updatedEvent = buildNewScheduleItem(this.state, date, formData)
+
+    console.log("updatedEvent", updatedEvent)
+
+    const submit = () => {
+      this.resetTime()
+      this.props.reset()
+      this.props.onAddEvent(updatedEvent)
+    }
+
+    if (pathOr(false, ["time", "hasEndTime"], updatedEvent)) {
+      const {
+        time: { unix, endUnix }
+      } = updatedEvent
+
+      const isValid = gt(endUnix, unix)
+
+      if (isValid) {
+        // submit()
+      } else {
+        this.setState({
+          showFormError: true,
+          formErrorText: "End time must occur after start time."
+        })
+      }
+    }
+  }
   handleRemoveEvent = id => {
     const { event } = this.props
     return e => {
@@ -122,8 +162,29 @@ class Schedule extends Component {
     return e => {
       const hasEndTime = action === "show"
       const updatedEndTime = merge(this.state.endTime, { hasEndTime })
-      this.setState({ endTime: updatedEndTime })
+      this.setState({ endTime: updatedEndTime, showFormError: false })
     }
+  }
+
+  getTimeDiff = time => {
+    console.log("time", time)
+    const start = moment(time.string, "h:mm a")
+    const end = moment(time.endString, "h:mm a")
+    const diff = end.diff(start, "minutes")
+    const formatMins = diff => (diff % 60 === 0 ? "" : ` ${diff % 60} m`)
+    const diffHour = Math.floor(diff / 60)
+    const res =
+      diff / 60 >= 1
+        ? {
+            hours: diffHour,
+            minutes: formatMins(diff)
+          }
+        : {
+            hours: 0,
+            minutes: diff
+          }
+
+    return res
   }
 
   render() {
@@ -138,15 +199,8 @@ class Schedule extends Component {
 
     const renderSchedule = item => {
       const getDifference = time => {
-        const start = moment(time.string, "h:mm a")
-        const end = moment(time.endString, "h:mm a")
-        const diff = end.diff(start, "minutes")
-        const formatMins = diff => (diff % 60 === 0 ? "" : ` ${diff % 60} m`)
-        const toRender =
-          diff / 60 >= 1
-            ? `(${Math.floor(diff / 60)} h${formatMins(diff)})`
-            : `(${diff} m)`
-
+        const { hours, minutes } = this.getTimeDiff(time)
+        const toRender = hours > 0 ? `(${hours} h${minutes})` : `(${minutes} m)`
         return <span className="f6 gray">{toRender}</span>
       }
 
@@ -190,7 +244,7 @@ class Schedule extends Component {
         >
           <DialogTitle>Add Event</DialogTitle>
           <DialogContent>
-            <form className="mt2">
+            <form className="mt2 mb3">
               <Field
                 component={MaterialInput}
                 type="text"
@@ -268,6 +322,9 @@ class Schedule extends Component {
                 )}
               </div>
             </form>
+            {this.state.showFormError && (
+              <span className="red f6 mt3">{this.state.formErrorText}</span>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={this.resetTime} color="primary">

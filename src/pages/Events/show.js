@@ -27,6 +27,10 @@ import moment from "moment"
 import MaterialInput from "../../components/MaterialInput"
 // import timeZones from "../../utilities/timeZones"
 
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
+
 const styleSheet = theme => ({
   root: {
     flexGrow: 1,
@@ -337,8 +341,8 @@ class EventShow extends Component {
 
         <Snackbar
           open={this.state.showSnackBar}
-          onRequestClose={this.handleCloseSnackBar}
-          transition={<Slide direction="up" />}
+          onClose={this.handleCloseSnackBar}
+          transition={Transition}
           SnackbarContentProps={{
             "aria-describedby": "message-id"
           }}

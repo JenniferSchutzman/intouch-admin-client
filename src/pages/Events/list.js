@@ -24,6 +24,10 @@ import { DateRangePicker } from "react-dates"
 import Snackbar from "material-ui/Snackbar"
 const mapIndex = addIndex(map)
 
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
+
 const styleSheet = theme => ({
   appBar: {
     position: "relative",
@@ -143,8 +147,8 @@ class EventsList extends Component {
         />
         <Snackbar
           open={this.state.showSnackBar}
-          onRequestClose={() => this.setState({ showSnackBar: false })}
-          transition={<Slide direction="up" />}
+          onClose={() => this.setState({ showSnackBar: false })}
+          transition={Transition}
           SnackbarContentProps={{
             "aria-describedby": "message-id"
           }}
