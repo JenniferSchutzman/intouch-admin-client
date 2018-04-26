@@ -46,7 +46,6 @@ class AddEvent extends Component {
       })
     }
 
-    console.log("open", open)
     return (
       <Dialog open={open} onClose={handleClose} transition={Transition}>
         <div>

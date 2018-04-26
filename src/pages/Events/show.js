@@ -1,30 +1,30 @@
-import { reduxForm, Field } from "redux-form"
-import React, { Component } from "react"
-import Paper from "material-ui/Paper"
-import { connect } from "react-redux"
-import { withStyles } from "material-ui/styles"
-import Button from "material-ui/Button"
-import Dialog from "material-ui/Dialog"
-import AppBar from "material-ui/AppBar"
-import Toolbar from "material-ui/Toolbar"
-import IconButton from "material-ui/IconButton"
-import Typography from "material-ui/Typography"
-import CloseIcon from "material-ui-icons/Close"
-import Slide from "material-ui/transitions/Slide"
-import TextField from "material-ui/TextField"
-import Tabs, { Tab } from "material-ui/Tabs"
-import Grid from "material-ui/Grid"
-import { FormControlLabel } from "material-ui/Form"
-import Switch from "material-ui/Switch"
-import SaveIcon from "material-ui-icons/Save"
-import { merge, assoc, compose, __, append } from "ramda"
-import { updateEvent } from "../../actions/events"
-import Snackbar from "material-ui/Snackbar"
-import Schedule from "./schedule"
-import Contacts from "./contacts"
-import Files from "./files"
-import moment from "moment"
-import MaterialInput from "../../components/MaterialInput"
+import { reduxForm, Field } from 'redux-form'
+import React, { Component } from 'react'
+import Paper from 'material-ui/Paper'
+import { connect } from 'react-redux'
+import { withStyles } from 'material-ui/styles'
+import Button from 'material-ui/Button'
+import Dialog from 'material-ui/Dialog'
+import AppBar from 'material-ui/AppBar'
+import Toolbar from 'material-ui/Toolbar'
+import IconButton from 'material-ui/IconButton'
+import Typography from 'material-ui/Typography'
+import CloseIcon from 'material-ui-icons/Close'
+import Slide from 'material-ui/transitions/Slide'
+import TextField from 'material-ui/TextField'
+import Tabs, { Tab } from 'material-ui/Tabs'
+import Grid from 'material-ui/Grid'
+import { FormControlLabel } from 'material-ui/Form'
+import Switch from 'material-ui/Switch'
+import SaveIcon from 'material-ui-icons/Save'
+import { merge, assoc, compose, __, append } from 'ramda'
+import { updateEvent } from '../../actions/events'
+import Snackbar from 'material-ui/Snackbar'
+import Schedule from './schedule'
+import Contacts from './contacts'
+import Files from './files'
+import moment from 'moment'
+import MaterialInput from '../../components/MaterialInput'
 // import timeZones from "../../utilities/timeZones"
 
 function Transition(props) {
@@ -37,7 +37,7 @@ const styleSheet = theme => ({
     marginTop: theme.spacing.unit * 3
   },
   appBar: {
-    position: "relative"
+    position: 'relative'
   },
   flex: {
     flex: 1
@@ -54,17 +54,13 @@ const styleSheet = theme => ({
   },
   container: {
     flexGrow: 1,
-    margin: "30px 10px 0 10px",
-    overflow: "scroll"
+    margin: '30px 10px 0 10px',
+    overflow: 'scroll'
   },
   formControl: {
     margin: theme.spacing.unit
   }
 })
-
-function Transition(props) {
-  return <Slide direction="left" {...props} />
-}
 
 class EventShow extends Component {
   constructor(props) {
@@ -79,7 +75,7 @@ class EventShow extends Component {
   componentDidMount() {
     const { event } = this.props
     const formData = { confirmed: event.confirmed }
-    const date = moment(event.date).format("YYYY-MM-DD")
+    const date = moment(event.date).format('YYYY-MM-DD')
     this.setState({
       formData,
       date
@@ -97,7 +93,7 @@ class EventShow extends Component {
 
   handleTimeZoneChange = e => {
     const { event } = this.props
-    const updatedEvent = assoc("timeZone", e.target.value, event)
+    const updatedEvent = assoc('timeZone', e.target.value, event)
     this.updateEvent(updatedEvent)
   }
 
@@ -107,12 +103,12 @@ class EventShow extends Component {
       event
     } = this.props
     const updatedSchedule = append(newEvent, schedule)
-    const updatedEvent = assoc("schedule", updatedSchedule, event)
+    const updatedEvent = assoc('schedule', updatedSchedule, event)
     this.updateEvent(updatedEvent)
   }
 
   onRemoveEvent = event => {
-    console.log("event! remove", event)
+    console.log('event! remove', event)
   }
 
   updateEvent = updatedEvent => {
@@ -123,7 +119,7 @@ class EventShow extends Component {
           {
             showSnackBar: true,
             dirty: false,
-            snackBarText: "Event Updated!"
+            snackBarText: 'Event Updated!'
           },
           () => {
             this.props.initialize(res)
@@ -131,7 +127,7 @@ class EventShow extends Component {
         )
       })
       .catch(err => {
-        console.log("err", err)
+        console.log('err', err)
         this.setState({
           showSnackBar: true,
           snackBarText: `Event Save failed!`
@@ -141,7 +137,7 @@ class EventShow extends Component {
 
   handleEditSubmit = formData => {
     const { formData: stateData, date } = this.state
-    const updateEventObj = compose(assoc("date", date), merge(__, stateData))
+    const updateEventObj = compose(assoc('date', date), merge(__, stateData))
     const updatedEvent = updateEventObj(formData)
     this.updateEvent(updatedEvent)
   }
@@ -231,8 +227,8 @@ class EventShow extends Component {
                         }
                         label={
                           this.state.formData.confirmed
-                            ? "Confirmed"
-                            : "Not Confirmed"
+                            ? 'Confirmed'
+                            : 'Not Confirmed'
                         }
                       />
                       <Field
@@ -344,7 +340,7 @@ class EventShow extends Component {
           onClose={this.handleCloseSnackBar}
           transition={Transition}
           SnackbarContentProps={{
-            "aria-describedby": "message-id"
+            'aria-describedby': 'message-id'
           }}
           message={<span id="message-id">{this.state.snackBarText}</span>}
         />
@@ -353,7 +349,7 @@ class EventShow extends Component {
   }
 }
 
-EventShow = reduxForm({ form: "editEvent" })(EventShow)
+EventShow = reduxForm({ form: 'editEvent' })(EventShow)
 EventShow = connect(state => ({ initialValues: state.events.event }))(EventShow)
 
 export default withStyles(styleSheet)(EventShow)

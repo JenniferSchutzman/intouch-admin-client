@@ -6,7 +6,6 @@ import List, {
 } from 'material-ui/List'
 import FAB from '../../components/FAB'
 import Button from 'material-ui/Button'
-import Snackbar from 'material-ui/Snackbar'
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -35,12 +34,9 @@ import {
 } from 'ramda'
 import IconButton from 'material-ui/IconButton'
 import DeleteIcon from 'material-ui-icons/Delete'
-import moment from 'moment-timezone'
 import getTimeDiff from './lib/getTimeDiff'
 
-function Transition(props) {
-  return <Slide direction="down" {...props} />
-}
+
 
 const styleSheet = theme => ({
   textField: {
@@ -124,6 +120,8 @@ class Schedule extends Component {
           formErrorText: 'End time must occur after start time.'
         })
       }
+    } else {
+      submit()
     }
   }
   handleRemoveEvent = id => {

@@ -4,8 +4,8 @@ import { withStyles } from "material-ui/styles"
 import AppBar from "material-ui/AppBar"
 import Toolbar from "material-ui/Toolbar"
 import Typography from "material-ui/Typography"
-import IconButton from "material-ui/IconButton"
-import MenuIcon from "material-ui-icons/Menu"
+// import IconButton from "material-ui/IconButton"
+// import MenuIcon from "material-ui-icons/Menu"
 
 const styleSheet = theme => ({
   root: {
@@ -24,9 +24,9 @@ function NavBar(props) {
     <div className={root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton color="contrast" aria-label="Menu">
+          {/* <IconButton color="contrast" aria-label="Menu">
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Typography type="title" color="inherit" className={flex}>
             inTouch
           </Typography>

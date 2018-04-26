@@ -30,14 +30,12 @@ const buildNewScheduleItem = (selectedTime, eventDate, formData) => {
   }
 
   const { hours: hoursDiff, minutes: minutesDiff } = getTimeDiff(time)
-
   const eventData = {
     time,
     id: shortId(),
     hoursDiff: hoursDiff || null,
     minutesDiff: minutesDiff || null
   }
-
   return merge(formData, eventData)
 }
 
