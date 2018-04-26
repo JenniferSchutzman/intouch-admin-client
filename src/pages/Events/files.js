@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import "rc-time-picker/assets/index.css"
 import List, {
   ListItem,
@@ -24,7 +24,7 @@ import Dropzone from "react-dropzone"
 
 var { config, S3, CognitoIdentityCredentials } = require("aws-sdk")
 
-const styleSheet = createStyleSheet("TextFields", theme => ({
+const styleSheet = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -50,7 +50,9 @@ const styleSheet = createStyleSheet("TextFields", theme => ({
     marginBottom: 12,
     color: theme.palette.text.secondary
   }
-}))
+})
+
+
 
 class Schedule extends Component {
   constructor(props) {
@@ -61,7 +63,10 @@ class Schedule extends Component {
   }
 
   handleOnAddFile = imgData => {
-    const { event: { files = [] }, event } = this.props
+    const {
+      event: { files = [] },
+      event
+    } = this.props
     const newFile = {
       name: imgData.Key,
       bucket: imgData.Bucket,
@@ -140,9 +145,11 @@ class Schedule extends Component {
     return (
       <div>
         <List>
-          {length(this.props.event.files) > 0
-            ? map(renderSchedule, this.props.event.files)
-            : <h1>No files yet!</h1>}
+          {length(this.props.event.files) > 0 ? (
+            map(renderSchedule, this.props.event.files)
+          ) : (
+            <h1>No files yet!</h1>
+          )}
         </List>
         <Dropzone onDrop={this.onDrop}>
           <div>

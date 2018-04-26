@@ -1,6 +1,6 @@
 import Slide from "material-ui/transitions/Slide"
 import React, { Component } from "react"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import List, {
   ListItem,
   ListItemText,
@@ -24,7 +24,7 @@ import { DateRangePicker } from "react-dates"
 import Snackbar from "material-ui/Snackbar"
 const mapIndex = addIndex(map)
 
-const styleSheet = createStyleSheet("FullScreenDialog", {
+const styleSheet = theme => ({
   appBar: {
     position: "relative",
     boxShadow: "none"
@@ -91,7 +91,9 @@ class EventsList extends Component {
   }
 
   render() {
-    const { events: { filtered: filteredEvents } } = this.props
+    const {
+      events: { filtered: filteredEvents }
+    } = this.props
 
     const renderEvents = curry((len, event, i) => {
       const { name, city, state, _id } = event

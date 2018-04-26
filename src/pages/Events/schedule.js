@@ -11,7 +11,7 @@ import Dialog, {
   DialogContent,
   DialogTitle
 } from "material-ui/Dialog"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import { Field, reduxForm } from "redux-form"
 import Slide from "material-ui/transitions/Slide"
 import MaterialInput from "../../components/MaterialInput"
@@ -34,13 +34,17 @@ import IconButton from "material-ui/IconButton"
 import DeleteIcon from "material-ui-icons/Delete"
 import moment from "moment-timezone"
 
-const styleSheet = createStyleSheet("TextFields", theme => ({
+const styleSheet = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     width: 200
   }
-}))
+})
+
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
 
 class Schedule extends Component {
   constructor(props) {
@@ -75,7 +79,9 @@ class Schedule extends Component {
   }
 
   handleOnAdd = formData => {
-    const { event: { date } } = this.props
+    const {
+      event: { date }
+    } = this.props
     const updatedEvent = buildNewScheduleItem(this.state, date, formData)
     this.resetTime()
     this.props.reset()
@@ -180,7 +186,7 @@ class Schedule extends Component {
         <Dialog
           open={this.state.open}
           onRequestClose={() => this.setState({ open: false })}
-          transition={<Slide direction="up" />}
+          transition={Transition}
         >
           <DialogTitle>Add Event</DialogTitle>
           <DialogContent>

@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import Button from "material-ui/Button"
 import Dialog, {
   DialogActions,
@@ -14,7 +14,11 @@ import { assoc } from "ramda"
 import moment from "moment"
 import MaterialInput from "../../components/MaterialInput"
 
-const styleSheet = createStyleSheet("TextFields", theme => ({
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
+
+const styleSheet = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -23,7 +27,7 @@ const styleSheet = createStyleSheet("TextFields", theme => ({
   content: {
     width: "80%"
   }
-}))
+})
 
 class AddEvent extends Component {
   constructor(props) {
@@ -41,47 +45,47 @@ class AddEvent extends Component {
         handleClose()
       })
     }
+
+    console.log("open", open)
     return (
-      <Dialog
-        open={open}
-        onRequestClose={handleClose}
-        transition={<Slide direction="up" />}
-      >
-        <DialogTitle>Add Event</DialogTitle>
-        <form onSubmit={this.props.handleSubmit(onAddEvent)}>
-          <DialogContent>
-            <TextField
-              id="date"
-              label="date"
-              type="date"
-              value={this.state.date}
-              className={classes.textField}
-              margin="normal"
-              InputLabelProps={{
-                shrink: true
-              }}
-              onChange={e => this.setState({ date: e.target.value })}
-            />
-            <Field
-              component={MaterialInput}
-              type="text"
-              name="name"
-              placeholder="Venue / Event Name"
-              classes={classes}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button
-              onClick={this.props.handleSubmit(onAddEvent)}
-              color="primary"
-            >
-              Ok
-            </Button>
-          </DialogActions>
-        </form>
+      <Dialog open={open} onClose={handleClose} transition={Transition}>
+        <div>
+          <DialogTitle>Add Event</DialogTitle>
+          <form onSubmit={this.props.handleSubmit(onAddEvent)}>
+            <DialogContent>
+              <TextField
+                id="date"
+                label="date"
+                type="date"
+                value={this.state.date}
+                className={classes.textField}
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true
+                }}
+                onChange={e => this.setState({ date: e.target.value })}
+              />
+              <Field
+                component={MaterialInput}
+                type="text"
+                name="name"
+                placeholder="Venue / Event Name"
+                classes={classes}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button
+                onClick={this.props.handleSubmit(onAddEvent)}
+                color="primary"
+              >
+                Ok
+              </Button>
+            </DialogActions>
+          </form>
+        </div>
       </Dialog>
     )
   }
