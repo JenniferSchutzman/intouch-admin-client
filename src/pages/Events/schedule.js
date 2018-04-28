@@ -11,7 +11,7 @@ import Dialog, {
   DialogContent,
   DialogTitle
 } from "material-ui/Dialog"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import { Field, reduxForm } from "redux-form"
 import Slide from "material-ui/transitions/Slide"
 import MaterialInput from "../../components/MaterialInput"
@@ -25,6 +25,8 @@ import {
   curry,
   merge,
   assoc,
+  pathOr,
+  gt,
   map,
   lensProp,
   over,
@@ -32,15 +34,19 @@ import {
 } from "ramda"
 import IconButton from "material-ui/IconButton"
 import DeleteIcon from "material-ui-icons/Delete"
-import moment from "moment-timezone"
+import getTimeDiff from "./lib/getTimeDiff"
 
-const styleSheet = createStyleSheet("TextFields", theme => ({
+const styleSheet = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     width: 200
   }
-}))
+})
+
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
 
 class Schedule extends Component {
   constructor(props) {
@@ -55,7 +61,9 @@ class Schedule extends Component {
         minute: "00",
         timeOfDay: "pm",
         hasEndTime: false
-      }
+      },
+      showFormError: false,
+      formErrorText: ""
     }
   }
 
@@ -70,18 +78,50 @@ class Schedule extends Component {
         minute: "00",
         timeOfDay: "pm",
         hasEndTime: false
-      }
+      },
+      showFormError: false,
+      formErrorText: ""
+    })
+  }
+
+  handleCloseSnackBar = () => {
+    this.setState({
+      showFormError: false
     })
   }
 
   handleOnAdd = formData => {
-    const { event: { date } } = this.props
-    const updatedEvent = buildNewScheduleItem(this.state, date, formData)
-    this.resetTime()
-    this.props.reset()
-    this.props.onAddEvent(updatedEvent)
-  }
+    const {
+      event: { date }
+    } = this.props
 
+    const updatedEvent = buildNewScheduleItem(this.state, date, formData)
+
+    const submit = () => {
+      this.resetTime()
+      this.props.reset()
+      this.props.onAddEvent(updatedEvent)
+    }
+
+    if (pathOr(false, ["time", "hasEndTime"], updatedEvent)) {
+      const {
+        time: { unix, endUnix }
+      } = updatedEvent
+
+      const isValid = gt(endUnix, unix)
+
+      if (isValid) {
+        submit()
+      } else {
+        this.setState({
+          showFormError: true,
+          formErrorText: "End time must occur after start time."
+        })
+      }
+    } else {
+      submit()
+    }
+  }
   handleRemoveEvent = id => {
     const { event } = this.props
     return e => {
@@ -116,7 +156,7 @@ class Schedule extends Component {
     return e => {
       const hasEndTime = action === "show"
       const updatedEndTime = merge(this.state.endTime, { hasEndTime })
-      this.setState({ endTime: updatedEndTime })
+      this.setState({ endTime: updatedEndTime, showFormError: false })
     }
   }
 
@@ -132,15 +172,12 @@ class Schedule extends Component {
 
     const renderSchedule = item => {
       const getDifference = time => {
-        const start = moment(time.string, "h:mm a")
-        const end = moment(time.endString, "h:mm a")
-        const diff = end.diff(start, "minutes")
-        const formatMins = diff => (diff % 60 === 0 ? "" : ` ${diff % 60} m`)
-        const toRender =
-          diff / 60 >= 1
-            ? `(${Math.floor(diff / 60)} h${formatMins(diff)})`
-            : `(${diff} m)`
+        const { hours, minutes } = getTimeDiff(time)
 
+        const toRender =
+          hours > 0
+            ? `(${hours}h ${minutes === null ? "" : `${minutes}m`})`
+            : `(${minutes}m)`
         return <span className="f6 gray">{toRender}</span>
       }
 
@@ -169,7 +206,7 @@ class Schedule extends Component {
     }
 
     return (
-      <div>
+      <div className="pb5">
         <List>
           {length(this.props.event.schedule) > 0 ? (
             map(renderSchedule, this.props.event.schedule)
@@ -180,11 +217,11 @@ class Schedule extends Component {
         <Dialog
           open={this.state.open}
           onRequestClose={() => this.setState({ open: false })}
-          transition={<Slide direction="up" />}
+          transition={Transition}
         >
           <DialogTitle>Add Event</DialogTitle>
           <DialogContent>
-            <form className="mt2">
+            <form className="mt2 mb3">
               <Field
                 component={MaterialInput}
                 type="text"
@@ -262,6 +299,9 @@ class Schedule extends Component {
                 )}
               </div>
             </form>
+            {this.state.showFormError && (
+              <span className="red f6 mt3">{this.state.formErrorText}</span>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={this.resetTime} color="primary">

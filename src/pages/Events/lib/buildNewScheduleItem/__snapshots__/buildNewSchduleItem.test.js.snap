@@ -1,11 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should build new schedule item 1`] = `
+exports[`should build new schedule item with End time 1`] = `
 Object {
+  "hoursDiff": 6,
+  "minutesDiff": null,
   "name": "test name",
   "time": Object {
     "endString": "6:00 pm",
+    "endUnix": 1510786800,
     "hasEndTime": true,
+    "string": "12:00 pm",
+    "unix": 1510765200,
+  },
+}
+`;
+
+exports[`should build new schedule item without end time 1`] = `
+Object {
+  "hoursDiff": null,
+  "minutesDiff": null,
+  "name": "test name",
+  "time": Object {
+    "endString": null,
+    "endUnix": null,
+    "hasEndTime": false,
     "string": "12:00 pm",
     "unix": 1510765200,
   },

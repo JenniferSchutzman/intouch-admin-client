@@ -1,6 +1,6 @@
 import Slide from "material-ui/transitions/Slide"
 import React, { Component } from "react"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import List, {
   ListItem,
   ListItemText,
@@ -24,7 +24,11 @@ import { DateRangePicker } from "react-dates"
 import Snackbar from "material-ui/Snackbar"
 const mapIndex = addIndex(map)
 
-const styleSheet = createStyleSheet("FullScreenDialog", {
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
+
+const styleSheet = theme => ({
   appBar: {
     position: "relative",
     boxShadow: "none"
@@ -91,7 +95,9 @@ class EventsList extends Component {
   }
 
   render() {
-    const { events: { filtered: filteredEvents } } = this.props
+    const {
+      events: { filtered: filteredEvents }
+    } = this.props
 
     const renderEvents = curry((len, event, i) => {
       const { name, city, state, _id } = event
@@ -114,7 +120,7 @@ class EventsList extends Component {
     })
 
     return (
-      <div>
+      <div className="pb5">
         <DateRangePicker
           startDate={this.props.events.startDate} // momentPropTypes.momentObj or null,
           endDate={this.props.events.endDate} // momentPropTypes.momentObj or null,
@@ -141,8 +147,8 @@ class EventsList extends Component {
         />
         <Snackbar
           open={this.state.showSnackBar}
-          onRequestClose={() => this.setState({ showSnackBar: false })}
-          transition={<Slide direction="up" />}
+          onClose={() => this.setState({ showSnackBar: false })}
+          transition={Transition}
           SnackbarContentProps={{
             "aria-describedby": "message-id"
           }}

@@ -2,7 +2,7 @@ import { reduxForm, Field } from "redux-form"
 import React, { Component } from "react"
 import Paper from "material-ui/Paper"
 import { connect } from "react-redux"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import Button from "material-ui/Button"
 import Dialog from "material-ui/Dialog"
 import AppBar from "material-ui/AppBar"
@@ -25,9 +25,15 @@ import Contacts from "./contacts"
 import Files from "./files"
 import moment from "moment"
 import MaterialInput from "../../components/MaterialInput"
+import mixpanel from "mixpanel-browser"
+
 // import timeZones from "../../utilities/timeZones"
 
-const styleSheet = createStyleSheet("CenteredTabs", theme => ({
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
+
+const styleSheet = theme => ({
   root: {
     flexGrow: 1,
     marginTop: theme.spacing.unit * 3
@@ -56,7 +62,7 @@ const styleSheet = createStyleSheet("CenteredTabs", theme => ({
   formControl: {
     margin: theme.spacing.unit
   }
-}))
+})
 
 class EventShow extends Component {
   constructor(props) {
@@ -69,6 +75,7 @@ class EventShow extends Component {
   }
 
   componentDidMount() {
+    mixpanel.track("event show")
     const { event } = this.props
     const formData = { confirmed: event.confirmed }
     const date = moment(event.date).format("YYYY-MM-DD")
@@ -94,7 +101,10 @@ class EventShow extends Component {
   }
 
   onAddEvent = newEvent => {
-    const { event: { schedule }, event } = this.props
+    const {
+      event: { schedule },
+      event
+    } = this.props
     const updatedSchedule = append(newEvent, schedule)
     const updatedEvent = assoc("schedule", updatedSchedule, event)
     this.updateEvent(updatedEvent)
@@ -132,6 +142,7 @@ class EventShow extends Component {
     const { formData: stateData, date } = this.state
     const updateEventObj = compose(assoc("date", date), merge(__, stateData))
     const updatedEvent = updateEventObj(formData)
+    mixpanel.track("event edited")
     this.updateEvent(updatedEvent)
   }
 
@@ -144,20 +155,12 @@ class EventShow extends Component {
   render() {
     const { classes, event } = this.props
 
-    // const renderTimeZoneOptions = ({ label }) => {
-    //   return (
-    //     <option value={label}>
-    //       {label}
-    //     </option>
-    //   )
-    // }
-
     return (
       <Dialog
         fullScreen
         open={this.props.open}
         onRequestClose={this.props.handleClose}
-        transition={<Slide direction="left" />}
+        transition={Transition}
       >
         <AppBar position="static">
           <Toolbar>
@@ -173,7 +176,7 @@ class EventShow extends Component {
             </Typography>
           </Toolbar>
           <Tabs
-            index={this.state.index}
+            value={this.state.index}
             onChange={this.handleChange}
             scrollable
             scrollButtons="auto"
@@ -185,8 +188,8 @@ class EventShow extends Component {
           </Tabs>
         </AppBar>
 
-        <div className={classes.container}>
-          {this.state.index === 0 &&
+        <div className={`${classes.container} pb5`}>
+          {this.state.index === 0 && (
             <div>
               <Button
                 color="accent"
@@ -199,7 +202,7 @@ class EventShow extends Component {
               <form>
                 <Grid container gutter={24}>
                   <Grid item xs={12} sm={6}>
-                    <Paper className={classes.paper}>
+                    <Paper className={classes.paper} elevation={0}>
                       <Field
                         component={MaterialInput}
                         type="text"
@@ -318,38 +321,32 @@ class EventShow extends Component {
                   </Grid>
                 </Grid>
               </form>
-            </div>}
-          {this.state.index === 1 &&
+            </div>
+          )}
+          {this.state.index === 1 && (
             <Schedule
               onAddEvent={this.onAddEvent}
               onRemoveEvent={this.onRemoveEvent}
               updateEvent={this.updateEvent}
               event={this.props.event}
-            />}
-          {this.state.index === 2 &&
-            <Contacts
-              updateEvent={this.updateEvent}
-              event={this.props.event}
-            />}
-          {this.state.index === 3 &&
-            <Files
-              updateEvent={this.updateEvent}
-              event={this.props.event}
-            />}
+            />
+          )}
+          {this.state.index === 2 && (
+            <Contacts updateEvent={this.updateEvent} event={this.props.event} />
+          )}
+          {this.state.index === 3 && (
+            <Files updateEvent={this.updateEvent} event={this.props.event} />
+          )}
         </div>
 
         <Snackbar
           open={this.state.showSnackBar}
-          onRequestClose={this.handleCloseSnackBar}
-          transition={<Slide direction="up" />}
+          onClose={this.handleCloseSnackBar}
+          transition={Transition}
           SnackbarContentProps={{
             "aria-describedby": "message-id"
           }}
-          message={
-            <span id="message-id">
-              {this.state.snackBarText}
-            </span>
-          }
+          message={<span id="message-id">{this.state.snackBarText}</span>}
         />
       </Dialog>
     )

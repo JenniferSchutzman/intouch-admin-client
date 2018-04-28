@@ -6,7 +6,7 @@ import Dialog, {
   DialogContent,
   DialogTitle
 } from "material-ui/Dialog"
-import { withStyles, createStyleSheet } from "material-ui/styles"
+import { withStyles } from "material-ui/styles"
 import { Field, reduxForm } from "redux-form"
 import Slide from "material-ui/transitions/Slide"
 import MaterialInput from "../../components/MaterialInput"
@@ -28,7 +28,7 @@ import shortId from "shortid"
 import IconButton from "material-ui/IconButton"
 import DeleteIcon from "material-ui-icons/Delete"
 
-const styleSheet = createStyleSheet("TextFields", theme => ({
+const styleSheet = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -54,7 +54,11 @@ const styleSheet = createStyleSheet("TextFields", theme => ({
     marginBottom: 12,
     color: theme.palette.text.secondary
   }
-}))
+})
+
+function Transition(props) {
+  return <Slide direction="up" {...props} />
+}
 
 class Schedule extends Component {
   constructor(props) {
@@ -117,25 +121,19 @@ class Schedule extends Component {
               <Typography type="body1" className={classes.title}>
                 name
               </Typography>
-              <Typography component="p">
-                {item.name || "N/A"}
-              </Typography>
+              <Typography component="p">{item.name || "N/A"}</Typography>
             </div>
             <div className={classes.cardContainer}>
               <Typography type="body1" className={classes.title}>
                 phone
               </Typography>
-              <Typography component="p">
-                {item.phone || "N/A"}
-              </Typography>
+              <Typography component="p">{item.phone || "N/A"}</Typography>
             </div>
             <div className={classes.cardContainer}>
               <Typography type="body1" className={classes.title}>
                 email
               </Typography>
-              <Typography component="p">
-                {item.email || "N/A"}
-              </Typography>
+              <Typography component="p">{item.email || "N/A"}</Typography>
             </div>
           </CardContent>
           <div className="fr">
@@ -152,15 +150,16 @@ class Schedule extends Component {
     }
 
     return (
-      <div>
-        {length(this.props.event.contacts) > 0
-          ? map(renderSchedule, this.props.event.contacts)
-          : <h1>No contacts! Click the + to add one.</h1>}
-
+      <div className="pb5">
+        {length(this.props.event.contacts) > 0 ? (
+          map(renderSchedule, this.props.event.contacts)
+        ) : (
+          <h1>No contacts! Click the + to add one.</h1>
+        )}
         <Dialog
           open={this.state.open}
           onRequestClose={() => this.setState({ open: false })}
-          transition={<Slide direction="up" />}
+          transition={Transition}
           maxWidth="md"
         >
           <DialogTitle>Add Contact</DialogTitle>
