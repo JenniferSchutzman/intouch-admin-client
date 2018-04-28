@@ -20,15 +20,15 @@ import "react-dates/lib/css/_datepicker.css"
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: "#757ce8",
-      main: "#3f50b5",
-      dark: "#002884",
-      contrastText: "#fff"
+      light: "#62727b",
+      main: "#37474f",
+      dark: "#102027",
+      contrastText: "#ffffff"
     },
     secondary: {
-      light: "#ff7961",
-      main: "#f44336",
-      dark: "#ba000d",
+      light: "#ffffff",
+      main: "#cfd8dc",
+      dark: "#9ea7aa",
       contrastText: "#000"
     }
   }

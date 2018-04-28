@@ -150,13 +150,12 @@ class Schedule extends Component {
     }
 
     return (
-      <div>
+      <div className="pb5">
         {length(this.props.event.contacts) > 0 ? (
           map(renderSchedule, this.props.event.contacts)
         ) : (
           <h1>No contacts! Click the + to add one.</h1>
         )}
-
         <Dialog
           open={this.state.open}
           onRequestClose={() => this.setState({ open: false })}

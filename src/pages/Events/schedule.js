@@ -1,22 +1,22 @@
-import React, { Component } from 'react'
+import React, { Component } from "react"
 import List, {
   ListItem,
   ListItemText,
   ListItemSecondaryAction
-} from 'material-ui/List'
-import FAB from '../../components/FAB'
-import Button from 'material-ui/Button'
+} from "material-ui/List"
+import FAB from "../../components/FAB"
+import Button from "material-ui/Button"
 import Dialog, {
   DialogActions,
   DialogContent,
   DialogTitle
-} from 'material-ui/Dialog'
-import { withStyles } from 'material-ui/styles'
-import { Field, reduxForm } from 'redux-form'
-import Slide from 'material-ui/transitions/Slide'
-import MaterialInput from '../../components/MaterialInput'
-import 'rc-time-picker/assets/index.css'
-import buildNewScheduleItem from './lib/buildNewScheduleItem'
+} from "material-ui/Dialog"
+import { withStyles } from "material-ui/styles"
+import { Field, reduxForm } from "redux-form"
+import Slide from "material-ui/transitions/Slide"
+import MaterialInput from "../../components/MaterialInput"
+import "rc-time-picker/assets/index.css"
+import buildNewScheduleItem from "./lib/buildNewScheduleItem"
 import {
   inc,
   times,
@@ -31,12 +31,10 @@ import {
   lensProp,
   over,
   reject
-} from 'ramda'
-import IconButton from 'material-ui/IconButton'
-import DeleteIcon from 'material-ui-icons/Delete'
-import getTimeDiff from './lib/getTimeDiff'
-
-
+} from "ramda"
+import IconButton from "material-ui/IconButton"
+import DeleteIcon from "material-ui-icons/Delete"
+import getTimeDiff from "./lib/getTimeDiff"
 
 const styleSheet = theme => ({
   textField: {
@@ -55,34 +53,34 @@ class Schedule extends Component {
     super(props)
     this.state = {
       open: false,
-      hour: '12',
-      minute: '00',
-      timeOfDay: 'pm',
+      hour: "12",
+      minute: "00",
+      timeOfDay: "pm",
       endTime: {
-        hour: '12',
-        minute: '00',
-        timeOfDay: 'pm',
+        hour: "12",
+        minute: "00",
+        timeOfDay: "pm",
         hasEndTime: false
       },
       showFormError: false,
-      formErrorText: ''
+      formErrorText: ""
     }
   }
 
   resetTime = () => {
     this.setState({
       open: false,
-      hour: '12',
-      minute: '00',
-      timeOfDay: 'pm',
+      hour: "12",
+      minute: "00",
+      timeOfDay: "pm",
       endTime: {
-        hour: '12',
-        minute: '00',
-        timeOfDay: 'pm',
+        hour: "12",
+        minute: "00",
+        timeOfDay: "pm",
         hasEndTime: false
       },
       showFormError: false,
-      formErrorText: ''
+      formErrorText: ""
     })
   }
 
@@ -105,7 +103,7 @@ class Schedule extends Component {
       this.props.onAddEvent(updatedEvent)
     }
 
-    if (pathOr(false, ['time', 'hasEndTime'], updatedEvent)) {
+    if (pathOr(false, ["time", "hasEndTime"], updatedEvent)) {
       const {
         time: { unix, endUnix }
       } = updatedEvent
@@ -117,7 +115,7 @@ class Schedule extends Component {
       } else {
         this.setState({
           showFormError: true,
-          formErrorText: 'End time must occur after start time.'
+          formErrorText: "End time must occur after start time."
         })
       }
     } else {
@@ -128,11 +126,11 @@ class Schedule extends Component {
     const { event } = this.props
     return e => {
       // eslint-disable-next-line
-      if (confirm('Are you sure you want to remove this event?')) {
+      if (confirm("Are you sure you want to remove this event?")) {
         const removeEvent = schedule => {
           return reject(event => event.id === id, schedule)
         }
-        const scheduleLens = lensProp('schedule')
+        const scheduleLens = lensProp("schedule")
         const updatedEvent = over(scheduleLens, removeEvent, event)
         this.props.updateEvent(updatedEvent)
       }
@@ -156,7 +154,7 @@ class Schedule extends Component {
 
   handleToggleEndTime = action => {
     return e => {
-      const hasEndTime = action === 'show'
+      const hasEndTime = action === "show"
       const updatedEndTime = merge(this.state.endTime, { hasEndTime })
       this.setState({ endTime: updatedEndTime, showFormError: false })
     }
@@ -166,9 +164,9 @@ class Schedule extends Component {
     const { classes } = this.props
 
     const renderTime = curry((type, i) => {
-      const val = type === 'hour' ? toString(inc(i)) : toString(i)
+      const val = type === "hour" ? toString(inc(i)) : toString(i)
       const stringifiedVal =
-        length(val) === 1 && type === 'minute' ? `0${val}` : val
+        length(val) === 1 && type === "minute" ? `0${val}` : val
       return <option value={stringifiedVal}>{stringifiedVal}</option>
     })
 
@@ -178,14 +176,14 @@ class Schedule extends Component {
 
         const toRender =
           hours > 0
-            ? `(${hours}h ${minutes === null ? '' : `${minutes}m`})`
+            ? `(${hours}h ${minutes === null ? "" : `${minutes}m`})`
             : `(${minutes}m)`
         return <span className="f6 gray">{toRender}</span>
       }
 
       const time = item.time.hasEndTime ? (
         <span>
-          {`${item.time.string} - ${item.time.endString}`}{' '}
+          {`${item.time.string} - ${item.time.endString}`}{" "}
           {getDifference(item.time)}
         </span>
       ) : (
@@ -208,7 +206,7 @@ class Schedule extends Component {
     }
 
     return (
-      <div>
+      <div className="pb5">
         <List>
           {length(this.props.event.schedule) > 0 ? (
             map(renderSchedule, this.props.event.schedule)
@@ -234,20 +232,20 @@ class Schedule extends Component {
               <div>
                 <select
                   value={this.state.hour}
-                  onChange={this.handleTimeChange('hour')}
+                  onChange={this.handleTimeChange("hour")}
                 >
-                  {times(renderTime('hour'), 12)}
+                  {times(renderTime("hour"), 12)}
                 </select>
                 <span> : </span>
                 <select
                   value={this.state.minute}
-                  onChange={this.handleTimeChange('minute')}
+                  onChange={this.handleTimeChange("minute")}
                 >
-                  {times(renderTime('minute'), 60)}
+                  {times(renderTime("minute"), 60)}
                 </select>
                 <select
                   value={this.state.timeOfDay}
-                  onChange={this.handleTimeChange('timeOfDay')}
+                  onChange={this.handleTimeChange("timeOfDay")}
                   className="ml1"
                 >
                   <option value="pm">pm</option>
@@ -258,14 +256,14 @@ class Schedule extends Component {
                 <div className="db w-100 mb2 pointer">
                   {this.state.endTime.hasEndTime ? (
                     <span
-                      onClick={this.handleToggleEndTime('hide')}
+                      onClick={this.handleToggleEndTime("hide")}
                       className="link fr f6 blue mt2"
                     >
                       remove ending time
                     </span>
                   ) : (
                     <span
-                      onClick={this.handleToggleEndTime('show')}
+                      onClick={this.handleToggleEndTime("show")}
                       className="link fr f6 blue mt2"
                     >
                       add ending time
@@ -278,20 +276,20 @@ class Schedule extends Component {
                   <div>
                     <select
                       value={this.state.endTime.hour}
-                      onChange={this.handleTimeChangeEnd('hour')}
+                      onChange={this.handleTimeChangeEnd("hour")}
                     >
-                      {times(renderTime('hour'), 12)}
+                      {times(renderTime("hour"), 12)}
                     </select>
                     <span> : </span>
                     <select
                       value={this.state.endTime.minute}
-                      onChange={this.handleTimeChangeEnd('minute')}
+                      onChange={this.handleTimeChangeEnd("minute")}
                     >
-                      {times(renderTime('minute'), 60)}
+                      {times(renderTime("minute"), 60)}
                     </select>
                     <select
                       value={this.state.endTime.timeOfDay}
-                      onChange={this.handleTimeChangeEnd('timeOfDay')}
+                      onChange={this.handleTimeChangeEnd("timeOfDay")}
                       className="ml1"
                     >
                       <option value="pm">pm</option>
@@ -325,7 +323,7 @@ class Schedule extends Component {
 
 const addForm = Schedule =>
   reduxForm({
-    form: 'addScheduleItem'
+    form: "addScheduleItem"
   })(Schedule)
 
 export default addForm(withStyles(styleSheet)(Schedule))

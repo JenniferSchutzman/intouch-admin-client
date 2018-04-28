@@ -52,8 +52,6 @@ const styleSheet = theme => ({
   }
 })
 
-
-
 class Schedule extends Component {
   constructor(props) {
     super(props)
@@ -143,7 +141,7 @@ class Schedule extends Component {
     }
 
     return (
-      <div>
+      <div className="pb5">
         <List>
           {length(this.props.event.files) > 0 ? (
             map(renderSchedule, this.props.event.files)

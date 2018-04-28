@@ -120,7 +120,7 @@ class EventsList extends Component {
     })
 
     return (
-      <div>
+      <div className="pb5">
         <DateRangePicker
           startDate={this.props.events.startDate} // momentPropTypes.momentObj or null,
           endDate={this.props.events.endDate} // momentPropTypes.momentObj or null,
